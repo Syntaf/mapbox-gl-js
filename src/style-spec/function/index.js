@@ -112,7 +112,7 @@ function createFunction(parameters, propertySpec, name) {
         }
 
         return {
-            isFeatureConstant: false,
+            result: 'composite',
             interpolationFactor: Interpolate.interpolationFactor.bind(undefined, {name: 'linear'}),
             zoomStops: featureFunctionStops.map(s => s[0]),
             evaluate({zoom}, properties) {
@@ -130,8 +130,7 @@ function createFunction(parameters, propertySpec, name) {
             evaluate = ({zoom}) => outputFunction(innerFun(parameters, propertySpec, zoom, hashedStops, categoricalKeyType));
         }
         return {
-            isFeatureConstant: true,
-            isZoomConstant: false,
+            result: 'camera',
             interpolationFactor: type === 'exponential' ?
                 Interpolate.interpolationFactor.bind(undefined, {name: 'exponential', base: parameters.base !== undefined ? parameters.base : 1}) :
                 () => 0,
@@ -140,8 +139,7 @@ function createFunction(parameters, propertySpec, name) {
         };
     } else {
         return {
-            isFeatureConstant: false,
-            isZoomConstant: true,
+            result: 'source',
             evaluate(_, feature) {
                 const value = feature && feature.properties ? feature.properties[parameters.property] : undefined;
                 if (value === undefined) {
